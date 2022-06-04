@@ -2,26 +2,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define __FIFO_MALLOC_ARR__
-
 #include "fifo.h"
 
-static uint8_t storage[10000];
+#define MAX_N 1000
+
+static uint8_t storage[MAX_N];
 
 int main() {
   // test
 
   fifo_t fifo;
+  error_t err;
 
 #if defined(__FIFO_LINKED__)
-  fifo_init(&fifo);
+  err = fifo_init(&fifo);
 #elif defined(__FIFO_MALLOC_ARR__)
-  fifo_init(&fifo, sizeof(int), 10000);
+  err = fifo_init(&fifo, sizeof(int), MAX_N);
 #else
-  fifo_init(&fifo, sizeof(int), 10000, &storage);
+  err = fifo_init(&fifo, sizeof(int), MAX_N, &storage);
 #endif
 
-  int n = 10;
+  assert(err == FIFO_SUCCESS);
+
+  int n = MAX_N;
+
+  for (int i = 0; i < n * 100; i++) {
+    for (int j = 0; j < n; j++) {
+      err = fifo_enqueue(&fifo, &i);
+      assert(err == FIFO_SUCCESS);
+      fifo_dequeue(&fifo);
+    }
+  }
 
   for (int i = 0; i < n; i++) {
     fifo_enqueue(&fifo, &i);

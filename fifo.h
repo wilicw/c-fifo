@@ -6,6 +6,18 @@
 #include <string.h>
 #include <stdio.h>
 
+#define CICULAR(PTR, HEAD, N) ((HEAD) + (((PTR)-(HEAD))%(N)))
+
+typedef uint8_t error_t;
+
+enum {
+  FIFO_NONEMPTY,
+  FIFO_EMPTY,
+  FIFO_FULL,
+  FIFO_SUCCESS,
+  FIFO_FAILED
+};
+
 #if defined(__FIFO_LINKED__)
 
 typedef struct node node_t;
@@ -35,24 +47,24 @@ typedef struct {
 
 #if defined(__FIFO_LINKED__)
 
-void fifo_init(fifo_t *);
+error_t fifo_init(fifo_t *);
 
 #elif defined(__FIFO_MALLOC_ARR__)
 
-void fifo_init(fifo_t *, size_t, size_t);
+error_t fifo_init(fifo_t *, size_t, size_t);
 
 #else
 
-void fifo_init(fifo_t *, size_t, size_t, void *);
+error_t fifo_init(fifo_t *, size_t, size_t, void *);
 
 #endif
 
-void fifo_enqueue(fifo_t *, void *);
+error_t fifo_enqueue(fifo_t *, void *);
 
 void *fifo_dequeue(fifo_t *);
 
 void *fifo_peek(fifo_t *);
 
-uint8_t fifo_empty(fifo_t *);
+error_t fifo_empty(fifo_t *);
 
 #endif
